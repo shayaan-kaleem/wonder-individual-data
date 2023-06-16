@@ -4,7 +4,7 @@ df = pd.read_csv("/Users/shayaan/Downloads/2021.txt",
                  sep='\t',engine="python", header = None)
 df.columns = ["value"]
 df['value'] = df['value'].astype(str)
-ICD_code = ["I10","I11","I12","I13","I14","I15"]
+ICD_code = ["I20","I21","I22","I23","I24","I25","I46"]
 hispanic_status = [str(number) for number in range(100, 200)]
 race_code_2021 = ["01","02"]
 race_code = ["6","7"]
@@ -30,19 +30,22 @@ df1["Gender"] = df['value'].str[68]
 df1['Gender'] = df1['Gender'].map({'M': 'Male', 'F': 'Female'})
 # Get age
 df1["Age"] = df['value'].str[69]
+df1["find_NA"] = df['value'].str[70:73]
 df1.loc[df1["Age"] == "1", "Age Code"] = df['value'].str[70:73]
 df1.loc[df1["Age"] != "1", "Age Code"] = "0"
 df1 = df1.drop(df1[df1["Age"] == "9"].index)
+df1 = df1.drop(df1[df1["find_NA"] == "999"].index)
 df1['Age Code'] = df1['Age Code'].str.lstrip('0')
 df1 = df1.astype(str)
-df1 = df1.drop('Age', axis=1)
+df1 = df1.drop(['Age',"find_NA"], axis=1)
 df1 = df1.rename(columns={"Age Code": "Age"})
 
 #Get year
 df1["Year"] = "2021"
+print(df1.head())
 
 df1 = df1.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-df1.to_csv("ind_data_final.csv", index = False, sep = "\t")
+df1.to_csv("ind_data_IHD.csv", index = False, sep = "\t")
 
 for year in range(2020, 2002, -1):
     filename = f"/Users/shayaan/Downloads/{year}.txt"
@@ -68,17 +71,19 @@ for year in range(2020, 2002, -1):
     df1['Gender'] = df1['Gender'].map({'M': 'Male', 'F': 'Female'})
     #Get age
     df1["Age"] = df['value'].str[69]
+    df1["find_NA"] = df['value'].str[70:73]
     df1.loc[df1["Age"] == "1", "Age Code"] = df['value'].str[70:73]
     df1.loc[df1["Age"] != "1", "Age Code"] = "0"
     df1 = df1.drop(df1[df1["Age"] == "9"].index)
+    df1 = df1.drop(df1[df1["find_NA"] == "999"].index)
     df1['Age Code'] = df1['Age Code'].str.lstrip('0')
     df1 = df1.astype(str)
-    df1 = df1.drop('Age', axis=1)
+    df1 = df1.drop(['Age',"find_NA"], axis=1)
     df1 = df1.rename(columns={"Age Code": "Age"})
     # Get year
     df1["Year"] = str(year)
     df1 = df1.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    df1.to_csv("ind_data_final.csv", mode="a", header=False, index=False, sep="\t")
+    df1.to_csv("ind_data_IHD.csv", mode="a", header=False, index=False, sep="\t")
 
 for year in range(2002, 1998, -1):
     filename = f"/Users/shayaan/Downloads/{year}.txt"
@@ -113,4 +118,4 @@ for year in range(2002, 1998, -1):
     df1["Year"] = str(year)
 
     df1 = df1.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    df1.to_csv("ind_data_final.csv", mode="a", header=False, index=False, sep="\t")
+    df1.to_csv("ind_data_IHD.csv", mode="a", header=False, index=False, sep="\t")
